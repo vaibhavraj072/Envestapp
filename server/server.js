@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
@@ -8,7 +9,7 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-const NEWSAPI_KEY = '75ade3d90fcf451fa44db440619bf84f';
+const NEWSAPI_KEY = process.env.NEWSAPI_KEY;
 const TOP_HEADLINES_URL = `https://newsapi.org/v2/top-headlines?country=in&pageSize=15&apiKey=${NEWSAPI_KEY}`;
 const EVERYTHING_URL = `https://newsapi.org/v2/everything?q=stock%20market%20india&sortBy=publishedAt&pageSize=15&apiKey=${NEWSAPI_KEY}`;
 
@@ -74,7 +75,7 @@ function mergeAndDeduplicateNews(arrays, maxCount = 20) {
   return merged;
 }
 
-const OPENAI_API_KEY = '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';
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 
 // Utility: Analyze sentiment for a single headline
