@@ -189,4 +189,4 @@ app.get('/api/test-openai', async (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Envestapp backend running on port ${PORT}`);
-}); 
+});
