@@ -62,7 +62,8 @@ Create a .env file in the root:
 We welcome contributions! Open a pull request or raise an issue if you want to add features or report bugs.
 
 👤 Author
-Made with ❤️ by Vaibhav
+Made with ❤️ by [Vaibhav Raj](https://vaibhavrajportfolio.vercel.app)
+
 
 ---
 
