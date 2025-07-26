@@ -13,14 +13,9 @@ const NEWSAPI_KEY = process.env.NEWSAPI_KEY;
 const TOP_HEADLINES_URL = `https://newsapi.org/v2/top-headlines?country=in&pageSize=15&apiKey=${NEWSAPI_KEY}`;
 const EVERYTHING_URL = `https://newsapi.org/v2/everything?q=stock%20market%20india&sortBy=publishedAt&pageSize=15&apiKey=${NEWSAPI_KEY}`;
 
-// In-memory cache
-let newsCache = {
-  news: [],
-  lastUpdated: null
-};
+let newsCache = { news: [], lastUpdated: null };
 const CACHE_DURATION = 15 * 60 * 1000; // 15 minutes
 
-// Fetch news from NewsAPI.org (top-headlines)
 async function fetchTopHeadlines() {
   try {
     const { data } = await axios.get(TOP_HEADLINES_URL);
@@ -39,7 +34,6 @@ async function fetchTopHeadlines() {
   }
 }
 
-// Fetch news from NewsAPI.org (everything)
 async function fetchEverything() {
   try {
     const { data } = await axios.get(EVERYTHING_URL);
@@ -58,7 +52,6 @@ async function fetchEverything() {
   }
 }
 
-// Merge and deduplicate news
 function mergeAndDeduplicateNews(arrays, maxCount = 20) {
   const seen = new Set();
   const merged = [];
@@ -75,58 +68,74 @@ function mergeAndDeduplicateNews(arrays, maxCount = 20) {
   return merged;
 }
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
+// ✅ Using OpenRouter instead of OpenAI
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
-// Utility: Analyze sentiment for a single headline
-async function analyzeSentimentWithOpenAI(headline, portfolio) {
+async function analyzeSentimentWithOpenRouter(headline, portfolio) {
   const prompt = `You are a financial news sentiment analyst. Given the following stock portfolio: [${portfolio.join(', ')}], and this news headline: "${headline}", analyze whether the news is POSITIVE, NEUTRAL, or NEGATIVE for the portfolio. Respond in JSON with keys 'sentiment' (one of: Positive, Neutral, Negative) and 'reason' (a short explanation).`;
+
   try {
     const response = await axios.post(
-      OPENAI_API_URL,
+      'https://openrouter.ai/api/v1/chat/completions',
       {
-        model: 'gpt-3.5-turbo',
+        model: 'anthropic/claude-3-haiku', // You can change to other models if needed
         messages: [
           { role: 'system', content: 'You are a financial news sentiment analyst.' },
           { role: 'user', content: prompt }
         ],
-        max_tokens: 100,
+        max_tokens: 150,
         temperature: 0.2
       },
       {
         headers: {
-          'Authorization': `Bearer ${OPENAI_API_KEY}`,
+          'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+          'HTTP-Referer': 'http://localhost:3000', // Change if deployed
+          'X-Title': 'Envestapp Sentiment',
           'Content-Type': 'application/json'
         }
       }
     );
-    // Try to parse JSON from the response
+
     const content = response.data.choices[0].message.content;
     let result;
     try {
       result = JSON.parse(content);
     } catch (e) {
-      // Fallback: try to extract sentiment and reason from text
       const match = content.match(/sentiment\s*[:=]\s*(Positive|Neutral|Negative)/i);
       const sentiment = match ? match[1] : 'Neutral';
       const reason = content.replace(/.*reason\s*[:=]/i, '').trim();
       result = { sentiment, reason };
     }
     return result;
+
   } catch (err) {
-    console.error('OpenAI API error:', err.message);
-    return { sentiment: 'Unknown', reason: 'OpenAI API error' };
+    console.error('OpenRouter API error:', err.message);
+    return { sentiment: 'Unknown', reason: 'OpenRouter API error' };
   }
 }
 
-// API endpoint to get general news (with caching)
+// ✅ Replace with OpenRouter version
+app.post('/api/ai-analysis', async (req, res) => {
+  const { news, portfolio } = req.body;
+  if (!Array.isArray(news) || !Array.isArray(portfolio) || portfolio.length === 0) {
+    return res.status(400).json({ error: 'Invalid input' });
+  }
+  const results = await Promise.all(news.map(async (item) => {
+    const analysis = await analyzeSentimentWithOpenRouter(item.title, portfolio);
+    return {
+      ...item,
+      sentiment: analysis.sentiment,
+      reason: analysis.reason
+    };
+  }));
+  res.json({ analysis: results });
+});
+
 app.get('/api/news', async (req, res) => {
   const now = Date.now();
   if (newsCache.lastUpdated && (now - newsCache.lastUpdated < CACHE_DURATION)) {
-    // Serve from cache
     return res.json({ news: newsCache.news, lastUpdated: newsCache.lastUpdated });
   }
-  // Refresh cache
   const [topHeadlines, everything] = await Promise.all([
     fetchTopHeadlines(),
     fetchEverything()
@@ -141,34 +150,16 @@ app.get('/api/news', async (req, res) => {
   }
 });
 
-// POST /api/ai-analysis
-app.post('/api/ai-analysis', async (req, res) => {
-  const { news, portfolio } = req.body;
-  if (!Array.isArray(news) || !Array.isArray(portfolio) || portfolio.length === 0) {
-    return res.status(400).json({ error: 'Invalid input' });
-  }
-  // For each news item, analyze sentiment
-  const results = await Promise.all(news.map(async (item) => {
-    const analysis = await analyzeSentimentWithOpenAI(item.title, portfolio);
-    return {
-      ...item,
-      sentiment: analysis.sentiment,
-      reason: analysis.reason
-    };
-  }));
-  res.json({ analysis: results });
-});
-
-// Temporary test route for OpenAI API
-app.get('/api/test-openai', async (req, res) => {
+// Optional: Test endpoint for sentiment check
+app.get('/api/test-sentiment', async (req, res) => {
   try {
-    const prompt = "Is the Indian stock market sentiment positive today? Respond in JSON with keys 'sentiment' and 'reason'.";
+    const prompt = `Is the Indian stock market sentiment positive today? Respond in JSON with keys 'sentiment' and 'reason'.`;
     const response = await axios.post(
-      OPENAI_API_URL,
+      'https://openrouter.ai/api/v1/chat/completions',
       {
-        model: 'gpt-3.5-turbo',
+        model: 'anthropic/claude-3-haiku',
         messages: [
-          { role: 'system', content: 'You are a financial news sentiment analyst.' },
+          { role: 'system', content: 'You are a financial sentiment analyst.' },
           { role: 'user', content: prompt }
         ],
         max_tokens: 100,
@@ -176,7 +167,9 @@ app.get('/api/test-openai', async (req, res) => {
       },
       {
         headers: {
-          'Authorization': `Bearer ${OPENAI_API_KEY}`,
+          'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+          'HTTP-Referer': 'http://localhost:3000',
+          'X-Title': 'Envestapp Sentiment',
           'Content-Type': 'application/json'
         }
       }
