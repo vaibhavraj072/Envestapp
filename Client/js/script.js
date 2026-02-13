@@ -1,5 +1,3 @@
-// Envestapp Frontend JS Skeleton
-
 document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
     const newsList = document.getElementById('news-list');

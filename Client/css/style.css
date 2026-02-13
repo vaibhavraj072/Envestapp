@@ -1,16 +1,17 @@
 /* EnvestApp Modern Fintech Theme */
 :root {
-    --bg-dark: #0B1221;
-    --bg-card: #131B2D;
-    --bg-hover: #1C273E;
+    --bg-dark: #0E1117;
+    --bg-panel: #161B22;
+    --bg-card: #21262D;
+    --bg-hover: #30363D;
     --accent-blue: #2979FF;
     --accent-teal: #00E5FF;
-    --text-primary: #E0E6ED;
-    --text-secondary: #94A3B8;
-    --success: #00C853;
-    --danger: #FF3D00;
-    --neutral: #FFD600;
-    --border-color: #1E293B;
+    --text-primary: #C9D1D9;
+    --text-secondary: #8B949E;
+    --success: #238636;
+    --danger: #DA3633;
+    --neutral: #D29922;
+    --border-color: #30363D;
 }
 
 body {
@@ -22,70 +23,88 @@ body {
 
 /* Scrollbar Customization */
 ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
 }
+
 ::-webkit-scrollbar-track {
     background: var(--bg-dark);
 }
+
 ::-webkit-scrollbar-thumb {
-    background: #334155;
-    border-radius: 4px;
+    background: #30363D;
+    border-radius: 3px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-    background: #475569;
+    background: #58A6FF;
+}
+
+/* Hide scrollbar for tickers but allow scroll */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
 .glass-panel {
-    background: rgba(19, 27, 45, 0.7);
+    background: rgba(22, 27, 34, 0.7);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .card-hover:hover {
     transform: translateY(-2px);
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+    border-color: var(--accent-blue);
 }
 
 .sentiment-badge-positive {
-    background: rgba(0, 200, 83, 0.15);
-    color: var(--success);
-    border: 1px solid rgba(0, 200, 83, 0.3);
+    background: rgba(35, 134, 54, 0.2);
+    color: #3FB950;
+    border: 1px solid rgba(35, 134, 54, 0.4);
 }
 
 .sentiment-badge-negative {
-    background: rgba(255, 61, 0, 0.15);
-    color: var(--danger);
-    border: 1px solid rgba(255, 61, 0, 0.3);
+    background: rgba(218, 54, 51, 0.2);
+    color: #F85149;
+    border: 1px solid rgba(218, 54, 51, 0.4);
 }
 
 .sentiment-badge-neutral {
-    background: rgba(255, 214, 0, 0.15);
-    color: var(--neutral);
-    border: 1px solid rgba(255, 214, 0, 0.3);
+    background: rgba(210, 153, 34, 0.2);
+    color: #E3B341;
+    border: 1px solid rgba(210, 153, 34, 0.4);
 }
 
-.ticker-tape {
-    animation: scroll-left 20s linear infinite;
+/* Ticker Animation if needed (we use scrollable containers as requested) */
+.ticker-item {
+    transition: background-color 0.2s;
 }
 
-@keyframes scroll-left {
-    0% { transform: translateX(100%); }
-    100% { transform: translateX(-100%); }
+.ticker-item:hover {
+    background-color: var(--bg-hover);
 }
 
 /* Loader */
 .loader {
-    border: 3px solid rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.1);
     border-radius: 50%;
-    border-top: 3px solid var(--accent-blue);
-    width: 24px;
-    height: 24px;
+    border-top: 2px solid var(--accent-blue);
+    width: 20px;
+    height: 20px;
     animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }

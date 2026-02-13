@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EnvestApp | Market Intelligence</title>
+    <title>EnvestApp | Market Terminal</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -13,12 +13,13 @@
             theme: {
                 extend: {
                     colors: {
-                        dark: '#0B1221',
-                        card: '#131B2D',
+                        dark: '#0E1117',
+                        panel: '#161B22',
+                        card: '#21262D',
                         accent: '#2979FF',
-                        success: '#00C853',
-                        danger: '#FF3D00',
-                        neutral: '#FFD600'
+                        success: '#238636',
+                        danger: '#DA3633',
+                        neutral: '#D29922'
                     }
                 }
             }
@@ -29,255 +30,190 @@
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Charts -->
-    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+    <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body class="flex flex-col h-screen text-gray-300">
+<body class="flex flex-col h-screen text-gray-300 bg-[#0E1117] overflow-hidden">
 
-    <!-- 1. Top Branding Header -->
-    <header class="h-16 border-b border-gray-800 flex items-center justify-between px-6 bg-[#0B1221] z-50">
-        <div class="flex items-center gap-3 cursor-pointer" onclick="showHome()">
-            <div
-                class="w-8 h-8 rounded bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center font-bold text-white">
-                E</div>
-            <div>
-                <h1 class="font-bold text-xl text-white tracking-wide">EnvestApp</h1>
-                <p class="text-[10px] text-gray-400 uppercase tracking-widest">Smart Market Intelligence</p>
+    <!-- 1. Top Header Section -->
+    <header class="h-14 border-b border-[#30363D] flex items-center justify-between px-4 bg-[#161B22] shrink-0 z-50">
+        <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded bg-blue-600 flex items-center justify-center font-bold text-white text-sm">E
             </div>
+            <h1 class="font-bold text-lg text-white tracking-wide">EnvestApp</h1>
         </div>
 
-        <div class="flex items-center gap-4">
-            <button class="p-2 rounded-full hover:bg-gray-800 transition"><i class="fa-regular fa-bell"></i></button>
-            <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center border border-gray-600">
-                <i class="fa-solid fa-user text-xs"></i>
+        <div class="flex items-center gap-4 text-sm">
+            <div class="flex items-center gap-2 px-3 py-1 rounded bg-[#21262D] border border-[#30363D]">
+                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                <span class="text-xs font-medium text-green-400">Market Open</span>
+            </div>
+            <button class="text-gray-400 hover:text-white transition relative">
+                <i class="fa-regular fa-bell"></i>
+                <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+            </button>
+            <div
+                class="w-7 h-7 rounded-full bg-gray-700 flex items-center justify-center border border-gray-600 text-xs">
+                VR
             </div>
         </div>
     </header>
 
-    <!-- 2. Horizontal Scrollable Market Companies -->
-    <section
-        class="h-24 border-b border-gray-800 bg-[#0F1627] flex items-center px-6 gap-4 overflow-x-auto whitespace-nowrap custom-scrollbar"
-        id="top-companies-scroll">
-        <!-- Company Cards injected via JS -->
-    </section>
-
-    <!-- 3. Search & Analyze -->
-    <div class="py-4 px-6 flex justify-center bg-[#0B1221] relative z-40 gap-4">
-        <div class="relative w-full max-w-2xl">
-            <input type="text" id="main-search"
-                class="w-full bg-[#131B2D] border border-gray-700 rounded-xl py-3 pl-12 pr-32 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition shadow-lg"
-                placeholder="Search company (e.g., TCS, RELIANCE, INFY...)">
-            <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
-            <button id="analyze-btn"
-                class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
-                Analyze <i class="fa-solid fa-bolt text-xs"></i>
-            </button>
+    <!-- 2. Dual Horizontal Scroll Section -->
+    <div class="bg-[#0E1117] shrink-0">
+        <!-- Ticker 1: Indices -->
+        <div class="h-10 border-b border-[#30363D] flex items-center overflow-hidden bg-[#161B22]">
+            <div
+                class="bg-blue-600/10 h-full px-3 flex items-center text-xs font-bold text-blue-400 border-r border-[#30363D]">
+                INDICES</div>
+            <div id="ticker-indices"
+                class="flex items-center gap-8 px-4 whitespace-nowrap overflow-x-auto scrollbar-hide flex-1">
+                <!-- Injected via JS -->
+            </div>
         </div>
-        <button onclick="showHome()" class="bg-gray-800 hover:bg-gray-700 text-white px-4 py-3 rounded-xl transition"
-            title="Home Dashboard">
-            <i class="fa-solid fa-house"></i>
-        </button>
+        <!-- Ticker 2: Companies -->
+        <div class="h-12 border-b border-[#30363D] flex items-center overflow-hidden">
+            <div
+                class="h-full px-3 flex items-center text-xs font-bold text-gray-400 border-r border-[#30363D] bg-[#161B22]">
+                STOCKS</div>
+            <div id="ticker-companies"
+                class="flex items-center gap-6 px-4 whitespace-nowrap overflow-x-auto scrollbar-hide flex-1">
+                <!-- Injected via JS -->
+            </div>
+        </div>
     </div>
 
-    <!-- 4. Main Content Layout (3-Column) -->
-    <main class="flex-1 flex overflow-hidden relative">
-
-        <!-- LEFT PANEL: Company List -->
-        <aside class="w-64 border-r border-gray-800 bg-[#0F1627] flex flex-col hidden md:flex">
-            <div class="p-3 border-b border-gray-800 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                Stocks Watchlist
+    <!-- 3. Search Section -->
+    <div class="py-3 px-6 bg-[#0E1117] border-b border-[#30363D] flex justify-center shrink-0">
+        <div class="relative w-full max-w-3xl flex gap-2">
+            <div class="relative flex-1">
+                <input type="text" id="main-search"
+                    class="w-full bg-[#161B22] border border-[#30363D] rounded-lg py-2 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+                    placeholder="Search company (e.g., TCS, SBI, INFY...)">
+                <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
             </div>
-            <div id="watchlist-container" class="flex-1 overflow-y-auto">
-                <!-- List items injected JS -->
+            <button id="analyze-btn"
+                class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded-lg text-sm font-medium transition shadow-lg shadow-blue-900/20">
+                Analyze
+            </button>
+        </div>
+    </div>
+
+    <!-- 4. Main Content Area (3-Column Grid) -->
+    <main class="flex-1 grid grid-cols-12 overflow-hidden">
+
+        <!-- LEFT PANEL: Company List (col-span-2) -->
+        <aside class="col-span-2 border-r border-[#30363D] bg-[#161B22] flex flex-col min-w-[200px] overflow-hidden">
+            <div
+                class="p-2 border-b border-[#30363D] text-[10px] font-bold text-gray-500 uppercase tracking-wider flex justify-between items-center">
+                <span>Watchlist</span>
+                <i class="fa-solid fa-sort text-gray-600 cursor-pointer"></i>
+            </div>
+            <div id="company-list" class="flex-1 overflow-y-auto custom-scrollbar">
+                <!-- Injected via JS -->
             </div>
         </aside>
 
-        <!-- CENTER PANEL: Portfolio / Analysis -->
-        <section class="flex-1 flex flex-col overflow-hidden bg-[#0B1221] relative">
+        <!-- CENTER PANEL: Graph + Portfolio (col-span-7) -->
+        <section class="col-span-7 flex flex-col bg-[#0E1117] overflow-hidden min-w-[400px]">
 
-            <div class="flex-1 overflow-y-auto p-6 scroll-smooth" id="center-panel-content">
-
-                <!-- VIEW 1: HOME / PORTFOLIO DASHBOARD -->
-                <div id="home-view" class="fade-in">
-                    <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-                        <i class="fa-solid fa-wallet text-blue-500"></i> YOUR PORTFOLIO
-                    </h2>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
-
-                        <!-- Col 1: Highlights -->
-                        <div class="bg-[#131B2D] rounded-xl border border-gray-800 p-5 flex flex-col">
-                            <h3 class="text-lg font-semibold text-gray-200 mb-4 border-b border-gray-700 pb-2">
-                                <i class="fa-solid fa-bolt text-yellow-400 mr-2"></i>Highlights
-                            </h3>
-                            <div class="space-y-4 flex-1">
-                                <!-- Mock Highlights -->
-                                <div
-                                    class="bg-[#0B1221] p-3 rounded-lg border border-gray-800 flex justify-between items-center bg-gray-600/10">
-                                    <div>
-                                        <div class="text-sm font-bold text-gray-300">Top Gainer</div>
-                                        <div class="text-xs text-gray-500">SBIN (State Bank of India)</div>
-                                    </div>
-                                    <div class="text-green-400 font-mono font-bold">+2.15%</div>
-                                </div>
-                                <div
-                                    class="bg-[#0B1221] p-3 rounded-lg border border-gray-800 flex justify-between items-center bg-gray-600/10">
-                                    <div>
-                                        <div class="text-sm font-bold text-gray-300">Top Loser</div>
-                                        <div class="text-xs text-gray-500">HDFCBANK</div>
-                                    </div>
-                                    <div class="text-red-400 font-mono font-bold">-0.30%</div>
-                                </div>
-                                <div
-                                    class="bg-[#0B1221] p-3 rounded-lg border border-gray-800 flex justify-between items-center bg-gray-600/10">
-                                    <div>
-                                        <div class="text-sm font-bold text-gray-300">Market Trend</div>
-                                        <div class="text-xs text-gray-500">Intraday Sentiment</div>
-                                    </div>
-                                    <div class="text-blue-400 font-bold text-xs uppercase">Bullish</div>
-                                </div>
-                            </div>
+            <!-- Upper Section: Graph -->
+            <div class="h-[55%] p-4 border-b border-[#30363D] flex flex-col">
+                <!-- Graph Header -->
+                <div class="flex justify-between items-start mb-2">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                            <span id="center-company-name">SENSEX</span>
+                            <span
+                                class="text-xs px-1.5 py-0.5 rounded bg-[#21262D] text-gray-400 font-normal border border-[#30363D]">BSE</span>
+                        </h2>
+                        <div class="flex items-baseline gap-2 mt-1">
+                            <span class="text-xl font-mono text-white" id="center-company-price">₹72,450.30</span>
+                            <span class="text-sm font-medium text-green-400" id="center-company-change">+0.85%</span>
                         </div>
-
-                        <!-- Col 2: Analysis -->
-                        <div class="bg-[#131B2D] rounded-xl border border-gray-800 p-5 flex flex-col">
-                            <h3 class="text-lg font-semibold text-gray-200 mb-4 border-b border-gray-700 pb-2">
-                                <i class="fa-solid fa-chart-pie text-purple-400 mr-2"></i>Analysis
-                            </h3>
-                            <div class="flex-1 flex flex-col items-center justify-center text-center p-4">
-                                <div
-                                    class="w-32 h-32 rounded-full border-4 border-gray-700 flex items-center justify-center mb-4 relative">
-                                    <div
-                                        class="absolute inset-0 rounded-full border-4 border-t-green-500 border-r-blue-500 border-b-transparent border-l-transparent transform rotate-45">
-                                    </div>
-                                    <div class="text-2xl font-bold text-white">72<span
-                                            class="text-sm text-gray-500">%</span></div>
-                                </div>
-                                <p class="text-sm text-gray-400 font-medium">Market Health Score</p>
-                                <p class="text-xs text-gray-500 mt-2">The Indian market is showing strong resilience
-                                    today led by Banking and IT sectors.</p>
-                            </div>
-                        </div>
-
                     </div>
-
-                    <div class="mt-8 text-center opacity-50">
-                        <i class="fa-solid fa-circle-info text-gray-500"></i>
-                        <span class="text-xs text-gray-500 ml-1">Select a company from the watchlist to view detailed
-                            charts.</span>
+                    <div class="flex bg-[#21262D] rounded-lg p-0.5 border border-[#30363D]">
+                        <button class="px-3 py-1 text-xs rounded hover:bg-[#30363D] text-gray-400"
+                            onclick="updateTimeframe('1D')">1D</button>
+                        <button class="px-3 py-1 text-xs rounded bg-[#30363D] text-white font-medium"
+                            onclick="updateTimeframe('1W')">1W</button>
+                        <button class="px-3 py-1 text-xs rounded hover:bg-[#30363D] text-gray-400"
+                            onclick="updateTimeframe('1M')">1M</button>
+                        <button class="px-3 py-1 text-xs rounded hover:bg-[#30363D] text-gray-400"
+                            onclick="updateTimeframe('1Y')">1Y</button>
                     </div>
                 </div>
 
-                <!-- VIEW 2: COMPANY DETAILS (Initially Hidden) -->
-                <div id="company-view" class="hidden fade-in">
+                <!-- Chart Area -->
+                <div id="main-chart"
+                    class="flex-1 w-full rounded-lg border border-[#30363D] bg-[#161B22] relative overflow-hidden">
+                </div>
+            </div>
 
-                    <!-- Back Button Mobile/Desktop -->
-                    <button onclick="showHome()"
-                        class="mb-4 text-xs flex items-center gap-1 text-gray-500 hover:text-white transition">
-                        <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
-                    </button>
+            <!-- Lower Section: News + Analysis -->
+            <div class="flex-1 grid grid-cols-2 overflow-hidden">
 
-                    <!-- Active Company Header (Dynamic) -->
-                    <div id="company-header" class="mb-6">
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <h2 class="text-3xl font-bold text-white mb-1 flex items-center gap-3">
-                                    <span id="active-company-name">RELIANCE</span>
-                                    <span
-                                        class="text-sm px-2 py-0.5 rounded bg-gray-800 text-gray-400 font-normal border border-gray-700">NSE</span>
-                                </h2>
-                                <div class="flex items-baseline gap-3">
-                                    <span class="text-2xl font-mono text-white"
-                                        id="active-company-price">₹2,456.00</span>
-                                    <span class="text-sm font-medium text-green-400"
-                                        id="active-company-change">+1.25%</span>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <span
-                                    class="inline-block px-3 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">Market
-                                    Open</span>
-                            </div>
-                        </div>
-
-                        <!-- Chart Container -->
-                        <div
-                            class="h-64 bg-[#131B2D] sorted rounded-xl border border-gray-800 mb-6 relative overflow-hidden group">
-                            <div id="main-chart" class="w-full h-full"></div>
-                            <div class="absolute top-2 left-2 flex gap-2">
-                                <span
-                                    class="px-2 py-1 bg-gray-800/80 rounded text-xs cursor-pointer hover:bg-gray-700">1D</span>
-                                <span class="px-2 py-1 bg-blue-600 rounded text-xs cursor-pointer text-white">1W</span>
-                                <span
-                                    class="px-2 py-1 bg-gray-800/80 rounded text-xs cursor-pointer hover:bg-gray-700">1M</span>
-                            </div>
-                        </div>
+                <!-- Left: Company News -->
+                <div class="border-r border-[#30363D] flex flex-col overflow-hidden bg-[#161B22]/50">
+                    <div
+                        class="p-2 border-b border-[#30363D] text-[10px] font-bold text-gray-500 uppercase tracking-wider bg-[#161B22]">
+                        Company News & Events
                     </div>
+                    <div id="company-news-container" class="flex-1 overflow-y-auto p-3 space-y-3 custom-scrollbar">
+                        <!-- Injected via JS -->
+                        <div class="text-center text-xs text-gray-500 mt-10">Select a company to view news</div>
+                    </div>
+                </div>
 
-                    <!-- AI Analysis Section -->
-                    <div id="ai-analysis-container" class="grid grid-cols-1 gap-6 mb-8">
-                        <!-- Sentiment Card -->
-                        <div class="bg-[#131B2D] rounded-xl p-5 border border-gray-800 shadow-lg">
-                            <div class="flex justify-between items-center mb-4">
-                                <h3 class="font-semibold text-white flex items-center gap-2">
-                                    <i class="fa-solid fa-brain text-purple-400"></i> AI Sentiment Analysis
-                                </h3>
-                                <span id="ai-sentiment-badge"
-                                    class="px-3 py-1 rounded-full text-xs font-bold bg-gray-700 text-gray-300">
-                                    WAITING
-                                </span>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div class="space-y-3">
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-400">Confidence Score</span>
-                                        <span class="text-white font-mono">87%</span>
-                                    </div>
-                                    <div class="w-full bg-gray-800 rounded-full h-1.5">
-                                        <div class="bg-gradient-to-r from-blue-500 to-purple-500 h-1.5 rounded-full"
-                                            style="width: 87%"></div>
-                                    </div>
-                                    <div class="flex justify-between text-sm mt-2">
-                                        <span class="text-gray-400">Risk Level</span>
-                                        <span class="text-yellow-400 font-medium">Moderate</span>
-                                    </div>
-                                </div>
-                                <div
-                                    class="bg-[#0B1221] p-3 rounded-lg border border-gray-800 text-sm leading-relaxed text-gray-300">
-                                    <p id="ai-reason-text">Select a stock and click "Analyze" to generate AI-powered
-                                        insights based on real-time news data.</p>
-                                </div>
-                            </div>
+                <!-- Right: AI Analysis -->
+                <div class="flex flex-col overflow-hidden bg-[#161B22]/50">
+                    <div
+                        class="p-2 border-b border-[#30363D] text-[10px] font-bold text-gray-500 uppercase tracking-wider bg-[#161B22] flex justify-between items-center">
+                        <span>AI Sentiment Analysis</span>
+                        <span id="ai-badge-status"
+                            class="px-2 py-0.5 rounded text-[10px] bg-gray-700 text-gray-300">IDLE</span>
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-4 custom-scrollbar">
+                        <div id="ai-content" class="h-full flex flex-col justify-center items-center text-center">
+                            <!-- Injected via JS -->
+                            <i class="fa-solid fa-robot text-gray-700 text-3xl mb-3"></i>
+                            <p class="text-gray-500 text-xs">Click "Analyze" to generate AI insights</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- RIGHT PANEL: Market News Feed -->
-                <aside class="w-80 border-l border-gray-800 bg-[#0F1627] flex flex-col hidden lg:flex">
-                    <div class="p-4 border-b border-gray-800 flex justify-between items-center">
-                        <span class="font-semibold text-white text-sm">Market News</span>
-                        <span class="text-xs text-blue-400 cursor-pointer hover:underline">View All</span>
-                    </div>
-                    <div id="news-feed-container" class="flex-1 overflow-y-auto p-4 space-y-4">
-                        <!-- News items injected JS -->
-                        <div class="text-center text-gray-500 text-sm mt-10">Loading news...</div>
-                    </div>
-                </aside>
+            </div>
+
+        </section>
+
+        <!-- RIGHT PANEL: Market Feed (col-span-3) -->
+        <aside class="col-span-3 border-l border-[#30363D] bg-[#161B22] flex flex-col overflow-hidden">
+            <div class="p-3 border-b border-[#30363D] text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                Market News Feed
+            </div>
+            <div id="global-news-feed" class="flex-1 overflow-y-auto p-0 custom-scrollbar">
+                <!-- Injected via JS -->
+            </div>
+        </aside>
 
     </main>
 
-    <!-- Footer -->
+    <!-- 5. Footer -->
     <footer
-        class="bg-[#0B1221] border-t border-gray-800 py-3 px-6 flex justify-between items-center text-xs text-gray-500">
+        class="bg-[#0D1117] border-t border-[#30363D] py-2 px-4 flex justify-between items-center text-[10px] text-gray-600 shrink-0">
         <div class="flex gap-4">
-            <a href="#" class="hover:text-white transition">About</a>
-            <a href="#" class="hover:text-white transition">Disclaimer</a>
-            <a href="#" class="hover:text-white transition">Data Sources</a>
+            <span>&copy; 2026 EnvestApp</span>
+            <a href="#" class="hover:text-gray-400">About</a>
+            <a href="#" class="hover:text-gray-400">Privacy</a>
+            <a href="#" class="hover:text-gray-400">Terms</a>
+            <a href="#" class="hover:text-gray-400">API Status</a>
         </div>
-        <div>
-            &copy; 2026 EnvestApp. Not Financial Advice.
+        <div class="flex gap-3">
+            <span>Designed by Vaibhav Raj</span>
+            <a href="#" class="hover:text-white"><i class="fa-brands fa-github"></i></a>
+            <a href="#" class="hover:text-blue-500"><i class="fa-brands fa-linkedin"></i></a>
         </div>
     </footer>
 
