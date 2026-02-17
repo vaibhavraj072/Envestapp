@@ -165,7 +165,10 @@ app.get('/api/news', async (req, res) => {
     }
 
     // Fallback to NewsAPI
-    const newsApiUrl = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&sortBy=publishedAt&pageSize=5&apiKey=${NEWSAPI_KEY}`;
+    const enhancedQuery = `${query} stock India OR NSE OR BSE`;
+
+    const newsApiUrl = `https://newsapi.org/v2/everything?q=${encodeURIComponent(enhancedQuery)}&sortBy=publishedAt&pageSize=5&language=en&apiKey=${NEWSAPI_KEY}`;
+
     const response = await axios.get(newsApiUrl);
     const articles = response.data.articles.map(a => ({
       title: a.title,
@@ -253,3 +256,5 @@ app.post('/api/ai-analysis', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`EnvestApp Backend running on port ${PORT}`);
 });
+
+
