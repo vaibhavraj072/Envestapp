@@ -27,7 +27,7 @@ console.log("--------------------");
 
 // Cache quotes briefly to avoid hitting rate limits (Finnhub free tier: 60 calls/min)
 const quoteCache = {};
-const QUOTE_TTL = 30 * 1000; // 30 seconds
+const QUOTE_TTL = 5 * 60 * 1000; // 5 minutes
 
 app.get('/api/quote/:symbol', async (req, res) => {
   let { symbol } = req.params;
@@ -141,7 +141,7 @@ app.get('/api/news', async (req, res) => {
   const query = req.query.q;
 
   if (!query) {
-    return res.redirect('/api/market-news');
+    return res.json({ news: [] });
   }
 
   try {
@@ -180,7 +180,12 @@ app.get('/api/news', async (req, res) => {
     res.json({ news: articles });
 
   } catch (error) {
-    console.error("[ERROR] Specific News:", error.message);
+    if (error.response) {
+      console.error(`[ERROR] Finnhub ${symbol}:`, error.response.status, error.response.data);
+    } else {
+      console.error(`[ERROR] Finnhub ${symbol}:`, error.message);
+    }
+
     res.json({ news: [] }); // Return empty instead of error to keep UI clean
   }
 });
