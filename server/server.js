@@ -1,4 +1,6 @@
+const portfolioRoutes = require('./routes/portfolio');
 require('dotenv').config();
+const authRoutes = require('./routes/auth');
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
@@ -8,6 +10,8 @@ const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
+app.use('/api/auth', authRoutes);
+app.use('/api/portfolio', portfolioRoutes);
 
 // --- API KEYS ---
 const NEWSAPI_KEY = process.env.NEWSAPI_KEY;
